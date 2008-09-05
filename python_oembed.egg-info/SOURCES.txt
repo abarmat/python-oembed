@@ -1,0 +1,8 @@
+oembed.py
+setup.cfg
+setup.py
+python_oembed.egg-info/PKG-INFO
+python_oembed.egg-info/SOURCES.txt
+python_oembed.egg-info/dependency_links.txt
+python_oembed.egg-info/requires.txt
+python_oembed.egg-info/top_level.txt
