@@ -347,10 +347,12 @@ class OEmbedEndpoint(object):
         if not headers.has_key('Content-Type'):
             raise OEmbedError('Missing mime-type in response')
         
-        if headers['Content-Type'] in ['text/xml']:
+        if headers['Content-Type'].find('application/xml') != -1 or \
+           headers['Content-Type'].find('text/xml') != -1:
             response = OEmbedResponse.newFromXML(raw)
             
-        elif headers['Content-Type'] in ['application/json', 'text/json']:
+        elif headers['Content-Type'].find('application/json') != -1 or \
+             headers['Content-Type'].find('text/json') != -1:
             response = OEmbedResponse.newFromJSON(raw)
         
         else:
