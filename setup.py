@@ -5,7 +5,7 @@
 '''The setup and build script for the python-oembed library.'''
 
 __author__ = 'abarmat@gmail.com'
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 
 
 # The base package metadata to be used by both distutils and setuptools
