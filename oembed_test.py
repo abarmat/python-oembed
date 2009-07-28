@@ -53,6 +53,7 @@ class UrlSchemeTest(unittest.TestCase):
         self.assertFalse(scheme.match('https://flickr.com/photos/wizardbt/2584979382/'))
         self.assertFalse(scheme.match('flickr.com/photos/wizardbt/2584979382/'))
         self.assertFalse(scheme.match('http://flickr/photos/wizardbt/2584979382/'))
+        self.assertFalse(scheme.match('http://conflickr.com/'))
       
 
 class ConsumerTest(unittest.TestCase):

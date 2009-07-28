@@ -62,8 +62,7 @@ import xml.etree.ElementTree as etree
 
 
 __author__ = 'abarmat@gmail.com'
-__version__ = '0.1.1'
-
+__version__ = '0.1.2'
 
 class OEmbedError(Exception):
     '''Base class for OEmbed errors'''
@@ -110,23 +109,8 @@ class OEmbedResponse(object):
         return response
 
     @classmethod
-    def create(cls, reponseType):
-        if reponseType == 'photo':
-            response = OEmbedPhotoResponse()
-
-        elif reponseType == 'video':
-            response = OEmbedVideoResponse()
-
-        elif reponseType == 'link':
-            response = OEmbedLinkResponse()
-
-        elif reponseType == 'rich':
-            response = OEmbedRichResponse()   
-
-        else:
-            response = OEmbedResponse()   
-
-        return response
+    def create(cls, responseType):
+        return resourceTypes.get(responseType, OEmbedResponse)()
 
     @classmethod
     def newFromJSON(cls, raw):
@@ -193,6 +177,13 @@ class OEmbedRichResponse(OEmbedResponse):
            not data.has_key('height'):
             raise OEmbedError('Missing required fields on OEmbed rich response.')     
 
+
+resourceTypes = {
+    'photo': OEmbedPhotoResponse,
+    'video': OEmbedVideoResponse,
+    'link':  OEmbedLinkResponse,
+    'rich':  OEmbedRichResponse
+}
 
 class OEmbedEndpoint(object):
     '''
@@ -340,7 +331,7 @@ class OEmbedEndpoint(object):
         opener.addheaders = self._requestHeaders.items()
 
         response = opener.open(url)
-    
+
         headers = response.info()
         raw = response.read()
 
@@ -396,7 +387,8 @@ class OEmbedUrlScheme(object):
             
         '''
         self._url = url
-        self._regex = re.compile(url.replace('*', '.*'))
+        self._regex = re.compile(url.replace('.', '\.')\
+                                    .replace('*', '.*'))
 
     def getUrl(self):
         '''
