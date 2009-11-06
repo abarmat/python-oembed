@@ -380,16 +380,19 @@ class OEmbedUrlScheme(object):
 
     def __init__(self, url):
         '''
-        Create a new OEmbedUrlScheme instanace. 
+        Create a new OEmbedUrlScheme instance. 
         
         Args;
             url: The url scheme. It also takes the wildcard character (*).
             
         '''
         self._url = url
-        self._regex = re.compile(url.replace('.', '\.')\
-                                    .replace('*', '.*'))
-
+        if url.startswith('regex:'):
+            self._regex = re.compile(url[6:])
+        else:
+            self._regex = re.compile(url.replace('.', '\.')\
+                                     .replace('*', '.*'))
+            
     def getUrl(self):
         '''
         Get the url scheme.
