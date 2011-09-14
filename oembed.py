@@ -57,8 +57,37 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
 import urllib
 import urllib2
 import re
-import simplejson
-import xml.etree.ElementTree as etree
+
+# json module is in the standard library as of python 2.6; fall back to
+# simplejson if present for older versions.
+try:
+    import json
+    assert hasattr(json, "loads") and hasattr(json, "dumps")
+    json_decode = json.loads
+    json_encode = json.dumps
+except Exception:
+    try:
+        import simplejson
+        json_decode = lambda s: simplejson.loads(_unicode(s))
+        json_encode = lambda v: simplejson.dumps(v)
+    except ImportError:
+        try:
+            # For Google AppEngine
+            from django.utils import simplejson
+            json_decode = lambda s: simplejson.loads(_unicode(s))
+            json_encode = lambda v: simplejson.dumps(v)
+        except ImportError:
+            def json_decode(s):
+                raise NotImplementedError(
+                    "A JSON parser is required, e.g., simplejson at "
+                    "http://pypi.python.org/pypi/simplejson/")
+            json_encode = json_decode
+            
+try:
+    from xml.etree import cElementTree as etree
+except ImportError:
+    # Running Python < 2.4 so we need a different import
+    import cElementTree as etree
 
 
 __author__ = 'abarmat@gmail.com'
@@ -114,8 +143,8 @@ class OEmbedResponse(object):
 
     @classmethod
     def newFromJSON(cls, raw):
-        data = simplejson.loads(raw)
-    
+        data = json_decode(raw)
+
         return cls.createLoad(data)
         
     @classmethod
@@ -502,3 +531,8 @@ class OEmbedConsumer(object):
                 
         return self._request(url, **opt)
 
+def _unicode(value):
+    if isinstance(value, str):
+        return value.decode("utf-8")
+    assert isinstance(value, unicode)
+    return value
