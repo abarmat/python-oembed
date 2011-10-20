@@ -1,12 +1,9 @@
 import unittest
-
 import urllib2
-
 import oembed
 
 
 class EndpointTest(unittest.TestCase):
-
     def testInit(self):
         #plain init
         ep = oembed.OEmbedEndpoint('http://www.flickr.com/services/oembed')
@@ -39,9 +36,7 @@ class EndpointTest(unittest.TestCase):
         ep.clearUrlSchemes()
         self.assertEqual(len(ep.getUrlSchemes()), 0)
         
-
 class UrlSchemeTest(unittest.TestCase):
-    
     def testInit(self):
         scheme = oembed.OEmbedUrlScheme('http://*.flickr.com/*')
 
@@ -55,9 +50,7 @@ class UrlSchemeTest(unittest.TestCase):
         self.assertFalse(scheme.match('http://flickr/photos/wizardbt/2584979382/'))
         self.assertFalse(scheme.match('http://conflickr.com/'))
       
-
 class ConsumerTest(unittest.TestCase):
-
     def testGettersAndSetters(self):
         consumer = oembed.OEmbedConsumer()
         
@@ -122,7 +115,7 @@ class ConsumerTest(unittest.TestCase):
                           
     def testNoEndpoints(self):
         consumer = oembed.OEmbedConsumer()        
-        
+
         self.assertRaises(oembed.OEmbedNoEndpoint, consumer.embed, \
                           'http://www.flickr.com/photos/wizardbt/2584979382/')
         
@@ -142,10 +135,8 @@ def suite():
     suite.addTests(unittest.makeSuite(EndpointTest))
     suite.addTests(unittest.makeSuite(UrlSchemeTest))
     suite.addTests(unittest.makeSuite(ConsumerTest))
-    
     return suite
 
 
 if __name__ == '__main__':
     unittest.main()
-

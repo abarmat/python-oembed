@@ -9,8 +9,8 @@ having to parse the resource directly.
 
 OEmbed format authors:
     * Cal Henderson (cal [at] iamcal.com)
-    * Mike Malone (mike [at] pownce.com)
-    * Leah Culver (leah [at] pownce.com)
+    * Mike Malone (mjmalone [at] gmail.com)
+    * Leah Culver (leah.culver [at] gmail.com)
     * Richard Crowley (r [at] rcrowley.org)
 
 

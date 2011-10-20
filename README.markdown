@@ -10,8 +10,8 @@ oEmbed is a format for allowing an embedded representation of a URL on third par
 OEmbed format authors:
 
 * Cal Henderson (cal at iamcal.com)
-* Mike Malone (mike at gmail.com)
-* Leah Culver (leah at gmail.com)
+* Mike Malone (mjmalone at gmail.com)
+* Leah Culver (leah.culver at gmail.com)
 * Richard Crowley (r at rcrowley.org)
 
 Install
