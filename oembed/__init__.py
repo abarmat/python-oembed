@@ -90,9 +90,6 @@ except ImportError:
     import cElementTree as etree
 
 
-__author__ = 'abarmat@gmail.com'
-__version__ = '0.2.0'
-
 class OEmbedError(Exception):
     '''Base class for OEmbed errors'''
 
@@ -230,7 +227,7 @@ class OEmbedEndpoint(object):
         
     def _initRequestHeaders(self):
         self._requestHeaders = {}
-        self.setUserAgent('python-oembed/' + __version__)
+        self.setUserAgent('python-oembed')
 
     def addUrlScheme(self, url):
         '''
