@@ -303,7 +303,10 @@ class OEmbedEndpoint(object):
             urlApi = self._urlApi.replace('{format}', params['format'])
             del params['format']
                 
-        return "%s?%s" % (urlApi, urllib.urlencode(params)) 
+        if '?' in urlApi:
+            return "%s&%s" % (urlApi, urllib.urlencode(params))
+        else:
+            return "%s?%s" % (urlApi, urllib.urlencode(params))
 
     def get(self, url, **opt):
         '''
