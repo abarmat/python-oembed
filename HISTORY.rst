@@ -1,6 +1,11 @@
 History
 =======
 
+0.2.2 (2012-06-08)
+------------------
+
+* If the endpoint URL already had URL parameters, use an ampersand instead to append URL parameters.
+
 0.2.1 (2011-12-29)
 ------------------
 
