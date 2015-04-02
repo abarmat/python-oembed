@@ -2,9 +2,9 @@
 
 Based on reference from http://oembed.com/
 
-oEmbed is a format for allowing an embedded representation of a URL on 
-third party sites. The simple API allows a website to display embedded content 
-(such as photos or videos) when a user posts a link to that resource, without 
+oEmbed is a format for allowing an embedded representation of a URL on
+third party sites. The simple API allows a website to display embedded content
+(such as photos or videos) when a user posts a link to that resource, without
 having to parse the resource directly.
 
 OEmbed format authors:
@@ -19,7 +19,7 @@ Simple usage:
     import oembed
 
     consumer = oembed.OEmbedConsumer()
-    endpoint = oembed.OEmbedEndpoint('http://www.flickr.com/services/oembed', 
+    endpoint = oembed.OEmbedEndpoint('http://www.flickr.com/services/oembed',
                                     ['http://*.flickr.com/*'])
     consumer.addEndpoint(endpoint)
 
@@ -53,9 +53,16 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
 
 '''
+try:
+    import urllib.parse as urllib # Python 3
+except ImportError:
+    import urllib # Python 2
 
-import urllib
-import urllib2
+try:
+    import urllib.request as urllib2 # Python 3
+except ImportError:
+    import urllib2 # Python 2
+
 import re
 
 # json module is in the standard library as of python 2.6; fall back to
@@ -82,7 +89,7 @@ except Exception:
                     "A JSON parser is required, e.g., simplejson at "
                     "http://pypi.python.org/pypi/simplejson/")
             json_encode = json_decode
-            
+
 try:
     from xml.etree import cElementTree as etree
 except ImportError:
@@ -95,39 +102,39 @@ class OEmbedError(Exception):
 
 class OEmbedInvalidRequest(OEmbedError):
     '''Raised when an invalid parameter is used in a request'''
-    
+
 class OEmbedNoEndpoint(OEmbedError):
     '''Raised when no endpoint is available for a particular URL'''
 
 
 class OEmbedResponse(object):
     '''
-    Base class for all OEmbed responses. 
-    
+    Base class for all OEmbed responses.
+
     This class provides a factory of OEmbed responses according to the format
-    detected in the type field. It also validates that mandatory fields are 
+    detected in the type field. It also validates that mandatory fields are
     present.
-    '''           
+    '''
     def _validateData(self, data):
         pass
-               
+
     def __getitem__(self, name):
         return self._data.get(name)
-    
+
     def getData(self):
         return self._data
-        
+
     def loadData(self, data):
-        self._validateData(data) 
+        self._validateData(data)
         self._data = data
 
     @classmethod
     def createLoad(cls, data):
-        if not data.has_key('type') or \
-           not data.has_key('version'):
+        if not 'type' in data or \
+           not 'version' in data:
             raise OEmbedError('Missing required fields on OEmbed response.')
         response = cls.create(data['type'])
-        response.loadData(data)       
+        response.loadData(data)
         return response
 
     @classmethod
@@ -138,59 +145,59 @@ class OEmbedResponse(object):
     def newFromJSON(cls, raw):
         data = json_decode(raw)
         return cls.createLoad(data)
-        
+
     @classmethod
     def newFromXML(cls, raw):
         elem = etree.XML(raw)
         data = dict([(e.tag, e.text) for e in elem.getiterator() \
-                    if e.tag not in ['oembed']])        
+                    if e.tag not in ['oembed']])
         return cls.createLoad(data)
-    
-        
+
+
 class OEmbedPhotoResponse(OEmbedResponse):
     '''
-    This type is used for representing static photos. 
+    This type is used for representing static photos.
     '''
     def _validateData(self, data):
         OEmbedResponse._validateData(self, data)
-    
-        if not data.has_key('url') or \
-           not data.has_key('width') or \
-           not data.has_key('height'):
-            raise OEmbedError('Missing required fields on OEmbed photo response.')        
+
+        if not 'url' in data or \
+           not 'width' in data or \
+           not 'height' in data:
+            raise OEmbedError('Missing required fields on OEmbed photo response.')
 
 class OEmbedVideoResponse(OEmbedResponse):
     '''
-    This type is used for representing playable videos.    
+    This type is used for representing playable videos.
     '''
     def _validateData(self, data):
         OEmbedResponse._validateData(self, data)
 
-        if not data.has_key('html') or \
-           not data.has_key('width') or \
-           not data.has_key('height'):
-            raise OEmbedError('Missing required fields on OEmbed video response.')        
+        if not 'html' in data or \
+           not 'width' in data or \
+           not 'height' in data:
+            raise OEmbedError('Missing required fields on OEmbed video response.')
 
 class OEmbedLinkResponse(OEmbedResponse):
     '''
-    Responses of this type allow a provider to return any generic embed data 
-    (such as title and author_name), without providing either the url or html 
-    parameters. The consumer may then link to the resource, using the URL 
+    Responses of this type allow a provider to return any generic embed data
+    (such as title and author_name), without providing either the url or html
+    parameters. The consumer may then link to the resource, using the URL
     specified in the original request.
     '''
 
 class OEmbedRichResponse(OEmbedResponse):
     '''
-    This type is used for rich HTML content that does not fall under 
+    This type is used for rich HTML content that does not fall under
     one of the other categories.
-    ''' 
+    '''
     def _validateData(self, data):
         OEmbedResponse._validateData(self, data)
 
-        if not data.has_key('html') or \
-           not data.has_key('width') or \
-           not data.has_key('height'):
-            raise OEmbedError('Missing required fields on OEmbed rich response.')     
+        if not 'html' in data or \
+           not 'width' in data or \
+           not 'height' in data:
+            raise OEmbedError('Missing required fields on OEmbed rich response.')
 
 
 resourceTypes = {
@@ -203,17 +210,17 @@ resourceTypes = {
 class OEmbedEndpoint(object):
     '''
     A class representing an OEmbed Endpoint exposed by a provider.
-    
-    This class handles a number of URL schemes and manage resource retrieval.    
+
+    This class handles a number of URL schemes and manage resource retrieval.
     '''
 
     def __init__(self, url, urlSchemes=None):
         '''
-        Create a new OEmbedEndpoint object. 
-        
+        Create a new OEmbedEndpoint object.
+
         Args:
             url: The url of a provider API (API endpoint).
-            urlSchemes: A list of URL schemes for this endpoint. 
+            urlSchemes: A list of URL schemes for this endpoint.
         '''
         self._urlApi = url
         self._urlSchemes = {}
@@ -221,10 +228,11 @@ class OEmbedEndpoint(object):
         self._urllib = urllib2
 
         if urlSchemes is not None:
-            map(self.addUrlScheme, urlSchemes)
+            for urlScheme in urlSchemes:
+                self.addUrlScheme(urlScheme)
 
         self._implicitFormat = self._urlApi.find('{format}') != -1
-        
+
     def _initRequestHeaders(self):
         self._requestHeaders = {}
         self.setUserAgent('python-oembed')
@@ -233,76 +241,82 @@ class OEmbedEndpoint(object):
         '''
         Add a url scheme to this endpoint. It takes a url string and create
         the OEmbedUrlScheme object internally.
-        
+
         Args:
             url: The url string that represents a url scheme to add.
         '''
+
         #@TODO: validate invalid url format according to http://oembed.com/
         if not isinstance(url, str):
             raise TypeError('url must be a string value')
-        
-        if not self._urlSchemes.has_key(url):
+
+        if not url in self._urlSchemes:
             self._urlSchemes[url] = OEmbedUrlScheme(url)
-    
+
     def delUrlScheme(self, url):
         '''
         Remove an OEmbedUrlScheme from the list of schemes.
-        
+
         Args:
-           url: The url used as key for the urlSchems dict. 
+           url: The url used as key for the urlSchems dict.
         '''
-        if self._urlSchemes.has_key(url):
+        if url in self._urlSchemes:
             del self._urlSchemes[url]
-    
+
     def clearUrlSchemes(self):
         '''Clear the schemes in this endpoint.'''
         self._urlSchemes.clear()
-            
+
     def getUrlSchemes(self):
         '''
-        Get the url schemes in this endpoint. 
-        
+        Get the url schemes in this endpoint.
+
         Returns:
             A dict of OEmbedUrlScheme objects. k => url, v => OEmbedUrlScheme
-        '''    
+        '''
         return self._urlSchemes
 
     def match(self, url):
         '''
-        Try to find if url matches against any of the schemes within this 
+        Try to find if url matches against any of the schemes within this
         endpoint.
 
         Args:
             url: The url to match against each scheme
-            
+
         Returns:
             True if a matching scheme was found for the url, False otherwise
         '''
-        for urlScheme in self._urlSchemes.itervalues():
+        try:
+            urlSchemes = self._urlSchemes.itervalues() # Python 2
+        except AttributeError:
+            urlSchemes = self._urlSchemes.values() # Python 3
+
+        for urlScheme in urlSchemes:
             if urlScheme.match(url):
                 return True
         return False
-        
+
     def request(self, url, **opt):
         '''
-        Format the input url and optional parameters, and provides the final url 
-        where to get the given resource. 
-        
+        Format the input url and optional parameters, and provides the final url
+        where to get the given resource.
+
         Args:
             url: The url of an OEmbed resource.
             **opt: Parameters passed to the url.
-            
+
         Returns:
             The complete url of the endpoint and resource.
         '''
         params = opt
-        params['url'] = url        
+        params['url'] = url
         urlApi = self._urlApi
-        
-        if params.has_key('format') and self._implicitFormat:
+
+        if 'format' in params and self._implicitFormat:
             urlApi = self._urlApi.replace('{format}', params['format'])
             del params['format']
-                
+
         if '?' in urlApi:
             return "%s&%s" % (urlApi, urllib.urlencode(params))
         else:
@@ -310,13 +324,13 @@ class OEmbedEndpoint(object):
 
     def get(self, url, **opt):
         '''
-        Convert the resource url to a complete url and then fetch the 
+        Convert the resource url to a complete url and then fetch the
         data from it.
-        
+
         Args:
             url: The url of an OEmbed resource.
             **opt: Parameters passed to the url.
-            
+
         Returns:
             OEmbedResponse object according to data fetched
         '''
@@ -325,22 +339,23 @@ class OEmbedEndpoint(object):
     def fetch(self, url):
         '''
         Fetch url and create a response object according to the mime-type.
-        
+
         Args:
             url: The url to fetch data from
-            
+
         Returns:
             OEmbedResponse object according to data fetched
-        '''        
+        '''
         opener = self._urllib.build_opener()
         opener.addheaders = self._requestHeaders.items()
         response = opener.open(url)
         headers = response.info()
         raw = response.read()
+        raw = raw.decode('utf8')
 
-        if not headers.has_key('Content-Type'):
+        if not 'Content-Type' in headers:
             raise OEmbedError('Missing mime-type in response')
-        
+
         if headers['Content-Type'].find('application/xml') != -1 or \
            headers['Content-Type'].find('text/xml') != -1:
             response = OEmbedResponse.newFromXML(raw)
@@ -378,8 +393,8 @@ class OEmbedUrlScheme(object):
 
     def __init__(self, url):
         '''
-        Create a new OEmbedUrlScheme instance. 
-        
+        Create a new OEmbedUrlScheme instance.
+
         Args;
             url: The url scheme. It also takes the wildcard character (*).
         '''
@@ -389,11 +404,11 @@ class OEmbedUrlScheme(object):
         else:
             self._regex = re.compile(url.replace('.', '\.')\
                                      .replace('*', '.*'))
-            
+
     def getUrl(self):
         '''
         Get the url scheme.
-        
+
         Returns:
             The url scheme.
         '''
@@ -405,7 +420,7 @@ class OEmbedUrlScheme(object):
 
         Args:
             url: The url to match against this scheme.
-            
+
         Returns:
             True if a match was found for the url, False otherwise
         '''
@@ -418,18 +433,18 @@ class OEmbedUrlScheme(object):
 class OEmbedConsumer(object):
     '''
     A class representing an OEmbed consumer.
-    
-    This class manages a number of endpoints, selects the corresponding one 
+
+    This class manages a number of endpoints, selects the corresponding one
     according to the resource url passed to the embed function and fetches
     the data.
-    '''    
+    '''
     def __init__(self):
         self._endpoints = []
-    
+
     def addEndpoint(self, endpoint):
         '''
         Add a new OEmbedEndpoint to be manage by the consumer.
-        
+
         Args:
             endpoint: An instance of an OEmbedEndpoint class.
         '''
@@ -438,12 +453,12 @@ class OEmbedConsumer(object):
     def delEndpoint(self, endpoint):
         '''
         Remove an OEmbedEnpoint from this consumer.
-        
+
         Args:
             endpoint: An instance of an OEmbedEndpoint class.
-        '''    
+        '''
         self._endpoints.remove(endpoint)
-        
+
     def clearEndpoints(self):
         '''Clear all the endpoints managed by this consumer.'''
         del self._endpoints[:]
@@ -451,7 +466,7 @@ class OEmbedConsumer(object):
     def getEndpoints(self):
         '''
         Get the list of endpoints.
-        
+
         Returns:
             The list of endpoints in this consumer.
         '''
@@ -462,28 +477,28 @@ class OEmbedConsumer(object):
             if endpoint.match(url):
                 return endpoint
         return None
-        
+
     def _request(self, url, **opt):
         endpoint = self._endpointFor(url)
         if endpoint is None:
-            raise OEmbedNoEndpoint('There are no endpoints available for %s' % url)        
+            raise OEmbedNoEndpoint('There are no endpoints available for %s' % url)
         return endpoint.get(url, **opt)
-                    
+
     def embed(self, url, format='json', **opt):
         '''
-        Get an OEmbedResponse from one of the providers configured in this 
+        Get an OEmbedResponse from one of the providers configured in this
         consumer according to the resource url.
-        
+
         Args:
             url: The url of the resource to get.
             format: Desired response format.
             **opt: Optional parameters to pass in the url to the provider.
-        
+
         Returns:
             OEmbedResponse object.
         '''
         if format not in ['json', 'xml']:
-            raise OEmbedInvalidRequest('Format must be json or xml')        
+            raise OEmbedInvalidRequest('Format must be json or xml')
         opt['format'] = format
         return self._request(url, **opt)
 
