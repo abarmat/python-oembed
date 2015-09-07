@@ -1,6 +1,10 @@
 import unittest
-import urllib2
 import oembed
+
+try:
+    import urllib.request as urllib2 # Python 3
+except ImportError:
+    import urllib2 # Python 2
 
 
 class EndpointTest(unittest.TestCase):
