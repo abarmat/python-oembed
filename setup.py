@@ -16,7 +16,7 @@ if sys.argv[-1] == "publish":
     publish()
     sys.exit()
 
-version = '0.2.2'
+version = '0.2.3'
 
 setup(
     name='python-oembed',
@@ -28,12 +28,13 @@ setup(
     url='http://github.com/abarmat/python-oembed',
     packages=['oembed'],
     license='MIT',
-    classifiers = ( 
+    classifiers = (
         "Development Status :: 4 - Beta",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python",
         "Programming Language :: Python :: 2.5",
         "Programming Language :: Python :: 2.6",
+        "Programming Language :: Python :: 3.4",
     ),
-    keywords='oembed python api'    
+    keywords='oembed python api'
 )
