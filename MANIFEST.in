@@ -1,0 +1,4 @@
+include HISTORY.rst
+include README.markdown
+include LICENSE
+recursive-include examples *
