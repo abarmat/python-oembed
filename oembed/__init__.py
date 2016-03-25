@@ -360,6 +360,7 @@ class OEmbedEndpoint(object):
            headers['Content-Type'].find('text/xml') != -1:
             response = OEmbedResponse.newFromXML(raw)
         elif headers['Content-Type'].find('application/json') != -1 or \
+             headers['Content-Type'].find('text/javascript') != -1 or \
              headers['Content-Type'].find('text/json') != -1:
             response = OEmbedResponse.newFromJSON(raw)
         else:
