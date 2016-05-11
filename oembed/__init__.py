@@ -64,7 +64,7 @@ except ImportError:
     import urllib2 # Python 2
 
 import re
-
+NO_TIMEOUT=object()
 # json module is in the standard library as of python 2.6; fall back to
 # simplejson if present for older versions.
 try:
@@ -214,7 +214,7 @@ class OEmbedEndpoint(object):
     This class handles a number of URL schemes and manage resource retrieval.
     '''
 
-    def __init__(self, url, urlSchemes=None):
+    def __init__(self, url, urlSchemes=None, timeout=NO_TIMEOUT):
         '''
         Create a new OEmbedEndpoint object.
 
@@ -226,6 +226,7 @@ class OEmbedEndpoint(object):
         self._urlSchemes = {}
         self._initRequestHeaders()
         self._urllib = urllib2
+        self._timeout = timeout
 
         if urlSchemes is not None:
             for urlScheme in urlSchemes:
@@ -348,7 +349,11 @@ class OEmbedEndpoint(object):
         '''
         opener = self._urllib.build_opener()
         opener.addheaders = self._requestHeaders.items()
-        response = opener.open(url)
+        if self._timeout != NO_TIMEOUT:
+            response = opener.open(url, timeout=self._timeout)
+        else:
+            response = opener.open(url)
+
         headers = response.info()
         raw = response.read()
         raw = raw.decode('utf8')
