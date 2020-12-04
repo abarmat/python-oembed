@@ -369,7 +369,10 @@ class OEmbedEndpoint(object):
              headers['Content-Type'].find('text/json') != -1:
             response = OEmbedResponse.newFromJSON(raw)
         else:
-            raise OEmbedError('Invalid mime-type in response - %s' % headers['Content-Type'])
+            try:
+                response = OEmbedResponse.newFromJSON(raw)
+            except:
+                raise OEmbedError('Invalid mime-type in response - %s' % headers['Content-Type'])
 
         return response
 

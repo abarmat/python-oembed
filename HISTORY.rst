@@ -4,6 +4,10 @@ History
 0.2.4 (2016-01-01)
 ------------------
 
+* Quickfix: Always try to parse JSON (as default) from response
+  Youtube stopped sending correct Content-Type header: text/html instead of JSON
+  [laulaz]
+
 * Add timeout
   Give the possibility to add a urllib timeout for a OEmbedEndpoint
   [jfroche]
