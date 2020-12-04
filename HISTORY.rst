@@ -4,6 +4,13 @@ History
 0.2.4 (2016-01-01)
 ------------------
 
+* Add timeout
+  Give the possibility to add a urllib timeout for a OEmbedEndpoint
+  [jfroche]
+
+* support non-standard text/javascript response
+  [sk1p, abarmat]
+
 * Fix packaging por pypi
 
 0.2.3 (2015-04-02)
