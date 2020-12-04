@@ -16,7 +16,7 @@ if sys.argv[-1] == "publish":
     publish()
     sys.exit()
 
-version = '0.2.4.imio1'
+version = '0.2.4.imio2.dev0'
 
 setup(
     name='python-oembed',
