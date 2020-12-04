@@ -7,7 +7,7 @@ History
 - Nothing changed yet.
 
 
-0.2.4 (2016-01-01)
+0.2.4 (2020-12-04)
 ------------------
 
 * Quickfix: Always try to parse JSON (as default) from response
